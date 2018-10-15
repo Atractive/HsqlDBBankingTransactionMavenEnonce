@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
@@ -63,6 +65,31 @@ public class BankingTest {
 		assertEquals("Balance incorrecte !", before0 - amount, myDAO.balanceForCustomer(fromCustomer), 0.001f);
 		assertEquals("Balance incorrecte !", before1 + amount, myDAO.balanceForCustomer(toCustomer), 0.001f);				
 	}
+        
+        @Test (expected = SQLException.class)
+        public void AmountImpossible() throws Exception {
+            myDAO.bankTransferTransaction(0, 1, 150.0f);
+        }
+        
+        @Test
+        public void Customer1Wrong(){
+            try {
+                myDAO.bankTransferTransaction(15, 0, 15.0f);
+            } catch (Exception ex) {
+                String result = ex.getLocalizedMessage();
+                assertEquals(result,"Le client 1 n'existe pas");
+            }
+        }
+        
+        @Test
+        public void Customer2Wrong(){
+            try {
+                myDAO.bankTransferTransaction(0, 15, 15.0f);
+            } catch (Exception ex) {
+                String result = ex.getLocalizedMessage();
+                assertEquals(result,"Le client 2 n'existe pas");
+            }
+        }
 	
 
 	public static DataSource getDataSource() throws SQLException {
